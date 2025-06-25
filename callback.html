@@ -1,26 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Spotify Token Received</title>
+  <meta charset="UTF-8" />
+  <title>Spotify Token Capture</title>
 </head>
 <body>
   <h1>Spotify Soul Extraction – Token Grab</h1>
-  <p id="status">Looking for token...</p>
+  <p id="status">Looking for your token...</p>
+  <textarea id="token" style="width: 100%; height: 100px;" readonly></textarea>
+  <br />
+  <button id="copyBtn">Copy Token to Clipboard</button>
 
   <script>
-    // This gets the token from the URL fragment (#access_token=...)
-    const hash = window.location.hash;
-    const params = new URLSearchParams(hash.substring(1));
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
     const token = params.get('access_token');
 
+    const statusEl = document.getElementById('status');
+    const tokenEl = document.getElementById('token');
+    const copyBtn = document.getElementById('copyBtn');
+
     if (token) {
-      document.getElementById("status").innerText = "Token found! Check the console.";
-      console.log("🎟️ Spotify Token:", token);
+      statusEl.innerText = "Token found! Copy it below and send it to me.";
+      tokenEl.value = token;
     } else {
-      document.getElementById("status").innerText = "❌ No token found.";
-      console.error("No token in URL fragment.");
+      statusEl.innerText = "❌ No token found in URL. Please login again.";
+      tokenEl.style.display = 'none';
+      copyBtn.style.display = 'none';
     }
+
+    copyBtn.addEventListener('click', () => {
+      tokenEl.select();
+      tokenEl.setSelectionRange(0, 99999); // For mobile devices
+      navigator.clipboard.writeText(tokenEl.value)
+        .then(() => alert("Token copied!"))
+        .catch(() => alert("Failed to copy token."));
+    });
   </script>
 </body>
 </html>
