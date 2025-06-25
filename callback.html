@@ -2,20 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spotify Token</title>
+  <title>Spotify Token Received</title>
 </head>
 <body>
-  <h1>Extracting token...</h1>
+  <h1>Spotify Soul Extraction – Token Grab</h1>
+  <p id="status">Looking for token...</p>
+
   <script>
-    const hash = window.location.hash.substring(1);
-    const params = new URLSearchParams(hash);
-    const token = params.get("access_token");
+    // This gets the token from the URL fragment (#access_token=...)
+    const hash = window.location.hash;
+    const params = new URLSearchParams(hash.substring(1));
+    const token = params.get('access_token');
 
     if (token) {
-      document.body.innerHTML = `<h2>Access Token:</h2><p style="word-break: break-all;">${token}</p>`;
-      console.log("Access token:", token);
+      document.getElementById("status").innerText = "Token found! Check the console.";
+      console.log("🎟️ Spotify Token:", token);
     } else {
-      document.body.innerHTML = "<h2>No token found.</h2>";
+      document.getElementById("status").innerText = "❌ No token found.";
+      console.error("No token in URL fragment.");
     }
   </script>
 </body>
