@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Token</title>
+</head>
+<body>
+  <h1>Extracting token...</h1>
+  <script>
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get("access_token");
+
+    if (token) {
+      document.body.innerHTML = `<h2>Access Token:</h2><p style="word-break: break-all;">${token}</p>`;
+      console.log("Access token:", token);
+    } else {
+      document.body.innerHTML = "<h2>No token found.</h2>";
+    }
+  </script>
+</body>
+</html>
