@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Token Captured</title>
+</head>
+<body>
+  <h1>✅ Spotify Token Received</h1>
+  <p>Saving token...</p>
+
+  <script>
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const token = params.get("access_token");
+
+    if (token) {
+      fetch("/save_token", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      })
+      .then(() => {
+        document.body.innerHTML += "<p>✅ Token saved to server.</p>";
+        console.log("Token:", token);
+      })
+      .catch(err => {
+        document.body.innerHTML += "<p>❌ Failed to save token.</p>";
+        console.error(err);
+      });
+    } else {
+      document.body.innerHTML += "<p>❌ No token found in URL.</p>";
+    }
+  </script>
+</body>
+</html>
