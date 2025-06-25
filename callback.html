@@ -2,29 +2,87 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Spotify Callback</title>
-</head>
-<body>
-  <h1>Spotify Token Callback</h1>
-  <p id="status">Parsing token...</p>
-
-  <script>
-    function getTokenFromHash() {
-      const hash = window.location.hash.substring(1);
-      const params = new URLSearchParams(hash);
-      const token = params.get("access_token");
-
-      const status = document.getElementById("status");
-      if (token) {
-        status.innerText = "✅ Token found!";
-        console.log("Access Token:", token);
-      } else {
-        status.innerText = "❌ No token found.";
-        console.error("No token in hash:", hash);
-      }
+  <title>🧬 Soul Extraction – Callback</title>
+  <style>
+    body {
+      background-color: #0b0b0b;
+      color: #f5f5f5;
+      font-family: monospace;
+      text-align: center;
+      padding: 10vh 2rem;
     }
 
-    window.onload = getTokenFromHash;
+    h1 {
+      font-size: 2rem;
+      background: linear-gradient(45deg, #ff00cc, #3333ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: pulse 1.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%   { opacity: 0.7; }
+      50%  { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 0.7; }
+    }
+
+    .box {
+      margin-top: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px dashed #888;
+      padding: 1rem;
+      font-size: 0.85rem;
+      word-break: break-word;
+    }
+
+    button {
+      margin-top: 1rem;
+      padding: 0.5rem 1rem;
+      font-size: 0.85rem;
+      background: #1db954;
+      border: none;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1aa34a;
+    }
+
+    #copied {
+      margin-top: 0.5rem;
+      color: #999;
+      font-size: 0.75rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>✅ Authentication Complete</h1>
+  <p>You may now close this window. Soul Extraction is in progress.</p>
+
+  <div class="box" id="codeBox">Extracting code...</div>
+  <button onclick="copyCode()">Copy Code</button>
+  <div id="copied">🔮 Copied to clipboard</div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const codeBox = document.getElementById("codeBox");
+    const copiedMsg = document.getElementById("copied");
+
+    codeBox.textContent = code ? `Code: ${code}` : "No code detected.";
+
+    function copyCode() {
+      if (!code) return;
+      navigator.clipboard.writeText(code).then(() => {
+        copiedMsg.style.display = "block";
+        setTimeout(() => copiedMsg.style.display = "none", 2000);
+      });
+    }
   </script>
 </body>
 </html>
