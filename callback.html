@@ -64,25 +64,36 @@
   <h1>✅ Authentication Complete</h1>
   <p>You may now close this window. Soul Extraction is in progress.</p>
 
-  <div class="box" id="codeBox">Extracting code...</div>
-  <button onclick="copyCode()">Copy Code</button>
+  <div class="box" id="tokenBox">Extracting token...</div>
+  <button onclick="copyToken()">Copy Token</button>
   <div id="copied">🔮 Copied to clipboard</div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
-    const codeBox = document.getElementById("codeBox");
-    const copiedMsg = document.getElementById("copied");
+    function getTokenFromHash() {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const token = params.get("access_token");
+      const tokenBox = document.getElementById("tokenBox");
+      const copiedMsg = document.getElementById("copied");
 
-    codeBox.textContent = code ? `Code: ${code}` : "No code detected.";
+      if (token) {
+        tokenBox.textContent = `Token: ${token}`;
+        window.extractedToken = token;
+      } else {
+        tokenBox.textContent = "❌ No token found.";
+      }
+    }
 
-    function copyCode() {
-      if (!code) return;
-      navigator.clipboard.writeText(code).then(() => {
+    function copyToken() {
+      if (!window.extractedToken) return;
+      navigator.clipboard.writeText(window.extractedToken).then(() => {
+        const copiedMsg = document.getElementById("copied");
         copiedMsg.style.display = "block";
         setTimeout(() => copiedMsg.style.display = "none", 2000);
       });
     }
+
+    window.onload = getTokenFromHash;
   </script>
 </body>
 </html>
