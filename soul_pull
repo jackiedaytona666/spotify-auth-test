@@ -2,47 +2,29 @@
 
 echo "🔮 Starting Soul Pull Ritual..."
 
-# Move into the correct directory
-cd "$(dirname "$0")" || exit 1
-
-echo "📦 Loading environment variables from .env..."
-export $(grep -v '^#' .env | xargs)
-
-if [ -z "$SPOTIPY_REDIRECT_URI" ]; then
-  echo "⚠️  SPOTIPY_REDIRECT_URI not set in .env. Aborting."
-  exit 1
+# Load .env variables
+if [ -f .env ]; then
+    echo "📦 Loading environment variables from .env..."
+    export $(grep -v '^#' .env | xargs)
+else
+    echo "⚠️  .env file not found. Aborting."
+    exit 1
 fi
 
-# Copy redirect URI to clipboard (macOS only)
-echo -n "$SPOTIPY_REDIRECT_URI" | pbcopy
-echo "📋 Copied redirect URI to clipboard:"
+# Set local redirect URI for development
+export SPOTIPY_REDIRECT_URI="http://127.0.0.1:8889/callback"
+
+# Copy to clipboard
+echo "$SPOTIPY_REDIRECT_URI" | pbcopy
+echo "📋 Copied local redirect URI to clipboard:"
 echo "   $SPOTIPY_REDIRECT_URI"
 
-# Open Spotify Dev Dashboard for manual update
-echo "🌐 Opening Spotify Developer Dashboard..."
-open "https://developer.spotify.com/dashboard/applications"
+# Reference production URI
+echo "🌐 Production Redirect (for GitHub Pages):"
+echo "   https://jackiedaytona666.github.io/spotify-auth-test/callback.html"
 
-echo ""
-echo "🛠️  Paste the URI above into your Spotify app's redirect URIs."
-read -p "🔁 Press [Enter] once you've updated the Spotify redirect URI..."
-
+# Launch Flask
 echo "🧿 Step 1: Starting Flask server on port 8889..."
-FLASK_APP=server.py flask run --port=8889 > /dev/null &
-FLASK_PID=$!
-sleep 2
-
-echo "🌐 Step 2: Opening free ngrok tunnel..."
-ngrok http 8889 > /dev/null &
-NGROK_PID=$!
-sleep 3
-
-echo ""
-echo "✨ Your OAuth URL: Check your ngrok URL here:"
-echo "   http://127.0.0.1:4040"
-echo ""
-echo "🧘 Waiting for Spotify login... (press CTRL+C to kill everything manually)"
-echo ""
-
-trap 'echo "💀 Killing tunnel and Flask..."; kill $FLASK_PID $NGROK_PID; exit' INT
-while true; do sleep 1; done
-
+export FLASK_APP=server.py
+export FLASK_ENV=development
+flask run --port=8889

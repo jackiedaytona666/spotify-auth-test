@@ -1,43 +1,48 @@
 from flask import Flask, request, redirect, render_template
 import urllib.parse, os
+from dotenv import load_dotenv
+from spotipy.oauth2 import SpotifyOAuth
+import spotipy
 
+load_dotenv()
 app = Flask(__name__)
 
-CLIENT_ID = "d17e2e495f064737939cbbfb68642d6b"
-REDIRECT_URI = "http://127.0.0.1:8889/callback"
-SCOPE = "user-top-read"
+CLIENT_ID = os.getenv("SPOTIPY_CLIENT_ID")
+CLIENT_SECRET = os.getenv("SPOTIPY_CLIENT_SECRET")
+REDIRECT_URI = os.getenv("SPOTIPY_REDIRECT_URI", "http://127.0.0.1:8889/callback")
+SCOPE = "user-top-read user-read-recently-played"
+
+sp_oauth = SpotifyOAuth(
+    client_id=CLIENT_ID,
+    client_secret=CLIENT_SECRET,
+    redirect_uri=REDIRECT_URI,
+    scope=SCOPE
+)
 
 @app.route("/")
 def home():
-    return redirect(
-        f"https://accounts.spotify.com/authorize"
-        f"?client_id={CLIENT_ID}"
-        f"&response_type=code"
-        f"&redirect_uri={urllib.parse.quote(REDIRECT_URI)}"
-        f"&scope={urllib.parse.quote(SCOPE)}"
-    )
+    auth_url = sp_oauth.get_authorize_url()
+    return redirect(auth_url)
 
 @app.route("/callback")
 def callback():
-    try:
-        with open("token.txt", "r") as f:
-            token = f.read().strip()
-    except FileNotFoundError:
-        return "Token file not found. Please authorize first.", 400
-
-    import spotipy
-    sp = spotipy.Spotify(auth=token)
+    code = request.args.get("code")
+    if not code:
+        return "❌ No code found in callback.", 400
 
     try:
-        print("🔍 Testing token...")
+        token_info = sp_oauth.get_access_token(code)
+        access_token = token_info["access_token"]
+        with open("token.txt", "w") as f:
+            f.write(access_token)
+        print("✅ Access token saved.")
+        sp = spotipy.Spotify(auth=access_token)
         user = sp.current_user()
-        print("✅ Token is valid! Logged in as:", user["display_name"])
-        return render_template("success.html")
+        print("🎧 Logged in as:", user["display_name"])
+        return render_template("success.html") if os.path.exists("templates/success.html") else "✅ Login complete."
     except Exception as e:
-        print("❌ Token is invalid or expired:", e)
+        print("❌ Error during token exchange:", e)
         return f"Error: {e}", 500
-
-
 
 if __name__ == "__main__":
     app.run(port=8889, debug=True)
