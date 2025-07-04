@@ -4,7 +4,8 @@ from flask import Flask, redirect, request, jsonify
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
 load_dotenv()
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
+
 app = Flask(__name__)
 
 @app.route('/')
@@ -37,9 +38,6 @@ def index():
 def login():
     auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
-
-if __name__ == "__main__":
-    app.run(debug=True)
 
 @app.route('/callback')
 def callback():
