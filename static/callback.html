@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Spotify Auth Callback</title>
+</head>
+<body>
+  <h1>Spotify Auth Success</h1>
+  <p id="token-display">Processing...</p>
+
+  <script>
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const accessToken = params.get("access_token");
+
+    if (accessToken) {
+      document.getElementById("token-display").textContent = "Access Token: " + accessToken;
+      // You can also send this token to your server here if needed
+    } else {
+      document.getElementById("token-display").textContent = "No access token found.";
+    }
+  </script>
+</body>
+</html>
