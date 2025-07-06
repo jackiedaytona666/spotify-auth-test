@@ -45,7 +45,7 @@ def callback():
 
 @app.route('/api/soul', methods=['GET'])
 def get_soul_data():
-    soul_path = 'spotify_soul/raw_soul_data.json'
+    soul_path = 'path/raw_soul_data.json'
 
     if not os.path.exists(soul_path):
         return jsonify({"error": "Soul data not found"}), 404
