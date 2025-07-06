@@ -1,6 +1,7 @@
 import os
 import json
 import time
+import datetime
 from flask import Flask, redirect, request, jsonify, render_template
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
@@ -41,7 +42,11 @@ def callback():
     if not code:
         return "Authorization failed."
 
-    cache_path = f".cache-{int(time.time())}"
+    tokens_dir = "tokens"
+    os.makedirs(tokens_dir, exist_ok=True)
+
+    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+    cache_path = os.path.join(tokens_dir, f"token_{timestamp}.json")
 
     sp_oauth_instance_for_callback = SpotifyOAuth(
         client_id=os.getenv("SPOTIPY_CLIENT_ID"),
