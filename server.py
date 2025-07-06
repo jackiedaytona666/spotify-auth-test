@@ -8,7 +8,7 @@ load_dotenv()
 app = Flask(__name__)
 
 @app.route('/')
-def entrance():
+def index():
     return render_template('index.html')
 
 @app.route('/exit')
@@ -41,7 +41,6 @@ def callback():
         return "Authorization failed."
 
     token_info = sp_oauth.get_access_token(code)
-    # You might want to do something with the token_info here
     return redirect("/exit")
 
 @app.route('/api/soul', methods=['GET'])

@@ -1,0 +1,11 @@
+version: 2
+tunnels:
+  soulsyphon:
+    proto: http
+    addr: 8888
+    domain: soulsyphonacademy.art
+
+  demon1:
+    proto: http
+    addr: 8881
+    domain: demon1.soulsyphonacademy.art

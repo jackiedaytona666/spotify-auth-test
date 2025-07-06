@@ -1,8 +1,14 @@
 <!DOCTYPE html>
-<html>
-<head><title>Home</title></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Soul Extraction – Auth Test</title>
+  <link rel="icon" href="data:,">
+</head>
 <body>
-  <h1>Welcome to Soul Extraction</h1>
-  <a href="/login">Start</a>
+  <h1>Spotify Soul Extraction – Auth Test</h1>
+  <p>Click below to authorize:</p>
+  <a id="auth-link" href="#">Connect with Spotify</a>
+  <script src="{{ url_for('static', filename='auth.js') }}"></script>
 </body>
 </html>
