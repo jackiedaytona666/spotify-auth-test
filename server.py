@@ -1,5 +1,6 @@
 import os
 import json
+import time
 from flask import Flask, redirect, request, jsonify, render_template
 from spotipy.oauth2 import SpotifyOAuth
 from dotenv import load_dotenv
@@ -40,8 +41,29 @@ def callback():
     if not code:
         return "Authorization failed."
 
-    token_info = sp_oauth.get_access_token(code)
-    return redirect("/exit")
+    cache_path = f".cache-{int(time.time())}"
+
+    sp_oauth_instance_for_callback = SpotifyOAuth(
+        client_id=os.getenv("SPOTIPY_CLIENT_ID"),
+        client_secret=os.getenv("SPOTIPY_CLIENT_SECRET"),
+        redirect_uri=os.getenv("SPOTIPY_REDIRECT_URI"),
+        scope="user-top-read user-read-recently-played",
+        cache_path=cache_path
+    )
+
+    token_info = sp_oauth_instance_for_callback.get_access_token(code, as_dict=True)
+
+    if token_info:
+        try:
+            with open(cache_path, 'w') as f:
+                json.dump(token_info, f, indent=4)
+            print(f"[+] Token explicitly saved to {cache_path}")
+        except Exception as e:
+            print(f"[-] Error saving token to {cache_path}: {e}")
+
+        return redirect("/exit")
+    else:
+        return "Failed to get access token."
 
 @app.route('/api/soul', methods=['GET'])
 def get_soul_data():
