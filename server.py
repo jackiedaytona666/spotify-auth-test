@@ -41,7 +41,8 @@ def callback():
         return "Authorization failed."
 
     token_info = sp_oauth.get_access_token(code)
-    return f"✅ Access token saved. Close this tab. <br><br>{token_info['access_token']}"
+    # You might want to do something with the token_info here
+    return redirect("/exit")
 
 @app.route('/api/soul', methods=['GET'])
 def get_soul_data():
@@ -54,6 +55,11 @@ def get_soul_data():
         soul_data = json.load(f)
 
     return jsonify(soul_data)
+
+@app.route('/get-auth-url')
+def get_auth_url():
+    auth_url = sp_oauth.get_authorize_url()
+    return jsonify({'auth_url': auth_url})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8889, debug=True)
